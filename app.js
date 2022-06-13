@@ -1,17 +1,53 @@
-const http = require('http')
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
 
-const PORT = 3000
+const PORT = 3000;
 
-const server = http.createServer((req, res) =>{
-    console.log('Server request')
-    console.log(req.url, req.method)
+const server = http.createServer((req, res) => {
+  console.log("Server request");
+  console.log(req.url, req.method);
 
-    res.setHeader('Content-type', 'text/html')
+  res.setHeader("Content-type", "text/html");
 
-    res.write('<h1>hello everyone</h1>')
-    res.end();
-})
+  const createPath = (page) => path.resolve(__dirname, "views", `${page}.html`);
 
-server.listen(PORT, 'localhost', (error) =>{
-    error ? console.log(error) : console.log('listenint port 3000')
-})
+  let basePath = "";
+
+  switch (req.url) {
+    case '/':
+    case '/index':
+    case '/home':
+      basePath = createPath("index");
+      res.statusCode = 200;
+      break;
+    case '/about-us':
+        res.statusCode = 301;
+        res.setHeader('Location', '/contacts');
+        res.end();
+        break;
+    case '/contacts':
+      basePath = createPath("contacts");
+      res.statusCode = 200;
+      break;
+    default:
+      basePath = createPath("error");
+      res.statusCode = 404;
+      break;
+  }
+
+  fs.readFile(basePath, (err, data) => {
+    if (err) {
+      console.log(err);
+      res.statusCode = 500;
+      res.end();
+    } else {
+      res.write(data);
+      res.end();
+    }
+  });
+});
+
+server.listen(PORT, "localhost", (error) => {
+  error ? console.log(error) : console.log("listenint port 3000");
+});
