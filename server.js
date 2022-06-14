@@ -12,11 +12,13 @@ app.listen(PORT, (error) => {
   error ? console.log(error) : console.log("listenint port 3000");
 });
 
-app.use((req, res, next) =>{
-    console.log(`path: ${req.path}`);
-    console.log(`method: ${req.method}`);
-    next();    
+app.use((req, res, next) => {
+  console.log(`path: ${req.path}`);
+  console.log(`method: ${req.method}`);
+  next();
 })
+
+app.use(express.static('styles'));
 
 app.get("/", (req, res) => {
   const title = "Home";
@@ -35,6 +37,9 @@ app.get("/contacts", (req, res) => {
 
 app.get("/posts/:id", (req, res) => {
   const title = "Post";
+  const post = {
+    
+  }
   res.render(createPath("posts"), { title });
 });
 
