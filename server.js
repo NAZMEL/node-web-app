@@ -1,15 +1,23 @@
 const express = require("express");
 const path = require("path");
+const mongoose = require("mongoose");
+const Post = require("./models/post");
 
 const app = express();
 app.set("view engine", "ejs");
 
 const PORT = 3000;
+const db = 'mongodb+srv://Admin:Admin@cluster0.ckodtml.mongodb.net/?retryWrites=true&w=majority'
+
+mongoose.connect(db)
+  .then((res) => console.log('Connected to DB'))
+  .catch((error) => console.log(error));
+
 const createPath = (page) =>
   path.resolve(__dirname, "ejs-views", `${page}.ejs`);
 
 app.listen(PORT, (error) => {
-  error ? console.log(error) : console.log("listenint port 3000");
+  error ? console.log(error) : console.log("listening port 3000");
 });
 
 app.use((req, res, next) => {
@@ -18,7 +26,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static('styles'));
 
@@ -60,19 +68,21 @@ app.get("/posts", (req, res) => {
       author: 'Bill',
     },
   ]
-  res.render(createPath("posts"), { title, posts});
+  res.render(createPath("posts"), { title, posts });
 });
 
 app.post("/add-post", (req, res) => {
-  const {title, author, text} = req.body;
-  const post = {
-    id: new Date(),
-    date: (new Date()).toLocaleDateString(),
-    title, 
-    text,
-    author,
-  }
-  res.render(createPath('post'), {post, title});
+  const { title, author, text } = req.body;
+  const post = new Post({ title, author, text });
+  
+  post.save()
+    .then((data) => res.send(data))
+    .catch((error) => {
+      console.log(error);
+      res.render(createPath('error'), { title: 'Error' })
+    });
+
+  res.render(createPath('post'), { post, title });
 });
 
 app.get("/add-post", (req, res) => {
