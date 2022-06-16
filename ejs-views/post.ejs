@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('./partials/head.ejs') %>
+  <%- include('./partials/head.ejs') %>
 
   <body>
     <%- include('./partials/nav.ejs') %>
-      <article>
-        <div class="info">
-          <span><%= post.createdAt.toLocaleDateString() %></span>
-          <span><%= post.author %></span>
-        </div>
-        <h1><%= post.title %></h1>
-        <p>
-          <%= post.text %>
-        </p>
-      </article>
-  </body>
+    <article>
+      <div class="info">
+        <span><%= post.createdAt.toLocaleDateString() %></span>
+        <span><%= post.author %></span>
+      </div>
+      <h1><%= post.title %></h1>
+      <p><%= post.text %></p>
 
+      <a href="/edit/<%= post.id %>" class="btn-edit">
+        <i class="icon-edit">edit</i>
+      </a>
+
+      <button class="btn-delete" data-id="<%= post.id %>">
+        <i class="fa fa-trash" data-id="<%= post.id %>">del</i>
+      </button>
+    </article>
+
+    <script>
+      document.addEventListener("click", (e) => {
+        const id = e.target?.dataset?.id || null;
+        if (id) {
+          fetch(`/posts/${id}`, { method: "DELETE" }).then(() => {
+            window.location.href = '/posts';
+          });
+        }
+      });
+    </script>
+  </body>
 </html>

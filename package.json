@@ -71,6 +71,7 @@
     "lowercase-keys": "^1.0.1",
     "lru-cache": "^6.0.0",
     "make-dir": "^3.1.0",
+    "method-override": "^3.0.0",
     "mimic-response": "^1.0.1",
     "minimatch": "^3.1.2",
     "minimist": "^1.2.6",

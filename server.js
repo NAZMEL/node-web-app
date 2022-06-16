@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
+const methodOverride = require('method-override')
 const Post = require("./models/post");
 const Contact = require("./models/contact");
 
@@ -22,7 +23,6 @@ app.listen(PORT, (error) => {
 });
 
 app.use((req, res, next) => {
-  console.log(`path: ${req.path}`);
   console.log(`method: ${req.method}`);
   next();
 });
@@ -30,6 +30,8 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static('styles'));
+
+app.use(methodOverride('_method'))
 
 app.get("/", (req, res) => {
   const title = "Home";
@@ -53,6 +55,38 @@ app.get("/posts/:id", (req, res) => {
     .catch((error) => {
       console.log(error);
       res.render(createPath('error'), { title: 'Error' })
+    });
+});
+
+app.delete("/posts/:id", (req, res) => {
+  const title = "Post";
+  Post.findByIdAndDelete(req.params.id)
+    .then(() => res.sendStatus(200))
+    .catch((error) => {
+      console.log(error);
+      res.render(createPath('error'), { title: 'Error' })
+    });
+});
+
+app.get("/edit/:id", (req, res) => {
+  const title = "Edit post";
+  Post.findById(req.params.id)
+    .then((post) => res.render(createPath('edit-post'), { post, title }))
+    .catch((error) => {
+      console.log(error);
+      res.render(createPath('error'), { title: 'Error' })
+    });
+});
+
+app.put("/edit/:id", (req, res) => {
+  const {title, author, text} = req.body;
+  const id = req.params.id;
+
+  Post.findByIdAndUpdate(id, {title, author, text})
+    .then(() => res.redirect(`/posts/${id}`))
+    .catch((error) => {
+      console.log(`Error: ${error}`);
+      res.render(createPath('error'), { title: 'Error'})
     });
 });
 
