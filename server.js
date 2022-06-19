@@ -2,9 +2,11 @@ require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
+const getMainRoutes = require("./routes/main-routes");
 const postRoutes = require("./routes/post-routes");
 const contactRoutes = require("./routes/contact-routes");
 const createPath = require("./helpers/create-path");
+const apiPostRoutes = require("./routes/api-post-routes");
 
 const app = express();
 app.set("view engine", "ejs");
@@ -26,19 +28,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static("styles"));
-
 app.use(methodOverride("_method"));
 
-app.get("/", (req, res) => {
-  const title = "Home";
-  res.render(createPath("index"), { title });
-});
-
+app.use(getMainRoutes);
 app.use(postRoutes);
 app.use(contactRoutes);
+app.use(apiPostRoutes);
 
 app.use((req, res) => {
   const title = "Error";
