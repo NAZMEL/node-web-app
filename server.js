@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
@@ -8,9 +9,8 @@ const createPath = require("./helpers/create-path");
 const app = express();
 app.set("view engine", "ejs");
 
-const PORT = 3000;
-const db =
-  "mongodb+srv://Admin:Admin@cluster0.ckodtml.mongodb.net/?retryWrites=true&w=majority";
+const PORT = process.env.PORT;
+const db = process.env.MONGO_URL;
 
 mongoose
   .connect(db)
